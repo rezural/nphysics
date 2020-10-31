@@ -1,10 +1,10 @@
 #[cfg(feature = "dim3")]
 use num::Bounded;
-use std::collections::HashMap;
 use std::env;
 use std::mem;
 use std::path::Path;
 use std::rc::Rc;
+use std::{collections::HashMap, fs::File, io::Write};
 
 use crate::engine::{GraphicsManager, GraphicsWindow};
 #[cfg(feature = "fluids")]
@@ -452,6 +452,19 @@ impl<N: RealField> Testbed<N> {
         }
 
         res
+    }
+
+    pub fn screenshot(&self, path: &str) -> {
+        let img_data = {
+            let window = self.window.as_ref().unwrap();
+            let image = window.snap_image();
+
+            let slice = image.iter().as_slice();
+            slice.clone().to_owned()
+        };
+
+        let mut file = File::create(path).unwrap();
+        file.write_all(img_data.as_slice()).unwrap();
     }
 
     fn clear(&mut self, window: &mut Window) {
